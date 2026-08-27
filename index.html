@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>外食履歴 | 音声で記録</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="app-header">
+    <h1>🍽️ 外食履歴</h1>
+    <p class="subtitle">声で話すだけで、外食の記録を残せます</p>
+  </header>
+
+  <section class="voice-panel" aria-label="音声入力">
+    <button id="voiceBtn" class="voice-btn" type="button">
+      <span class="voice-btn-icon" aria-hidden="true">🎤</span>
+      <span class="voice-btn-label">音声で記録する</span>
+    </button>
+    <p id="voiceStatus" class="voice-status" role="status" aria-live="polite">
+      ボタンを押して「今日、渋谷のラーメン屋で1200円使った」のように話してください
+    </p>
+    <p id="voiceUnsupported" class="voice-unsupported" hidden>
+      お使いのブラウザは音声入力に対応していません。下のフォームから手入力してください。
+    </p>
+    <textarea id="transcript" class="transcript" rows="2" placeholder="ここに認識結果が表示されます（編集もできます）"></textarea>
+  </section>
+
+  <section class="form-panel" aria-label="記録の内容">
+    <form id="entryForm">
+      <input type="hidden" id="entryId">
+      <div class="field-row">
+        <label for="date">日付</label>
+        <input type="date" id="date" required>
+      </div>
+      <div class="field-row">
+        <label for="store">店名</label>
+        <input type="text" id="store" placeholder="例）ラーメン二郎" required>
+      </div>
+      <div class="field-row">
+        <label for="genre">ジャンル</label>
+        <select id="genre">
+          <option value="">選択してください</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label for="amount">金額（円）</label>
+        <input type="number" id="amount" min="0" step="1" placeholder="例）1200">
+      </div>
+      <div class="field-row">
+        <label for="memo">メモ</label>
+        <input type="text" id="memo" placeholder="任意メモ">
+      </div>
+      <div class="form-actions">
+        <button type="submit" id="saveBtn" class="primary-btn">保存する</button>
+        <button type="button" id="cancelEditBtn" class="ghost-btn" hidden>編集をキャンセル</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="summary-panel" aria-label="集計">
+    <div class="summary-card">
+      <span class="summary-label">記録件数</span>
+      <span id="summaryCount" class="summary-value">0件</span>
+    </div>
+    <div class="summary-card">
+      <span class="summary-label">今月の合計</span>
+      <span id="summaryMonthTotal" class="summary-value">¥0</span>
+    </div>
+    <div class="summary-card">
+      <span class="summary-label">総合計</span>
+      <span id="summaryTotal" class="summary-value">¥0</span>
+    </div>
+  </section>
+
+  <section class="history-panel" aria-label="外食履歴一覧">
+    <div class="history-toolbar">
+      <input type="search" id="searchInput" placeholder="店名・メモで検索">
+    </div>
+    <ul id="historyList" class="history-list"></ul>
+    <p id="emptyState" class="empty-state" hidden>まだ記録がありません。音声かフォームから追加してみましょう。</p>
+  </section>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
