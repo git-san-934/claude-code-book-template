@@ -1,0 +1,11 @@
+{
+  "name": "外食履歴",
+  "short_name": "外食履歴",
+  "description": "音声で外食の記録を残せるアプリ",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#faf7f2",
+  "theme_color": "#e0672c",
+  "lang": "ja"
+}
