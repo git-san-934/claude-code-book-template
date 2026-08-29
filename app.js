@@ -114,7 +114,19 @@
     const plainDe = text.match(/([^\s、。,]{2,20}?)で/);
     if (plainDe) return plainDe[1];
 
-    return "";
+    // Fallback: no particle-based pattern matched (e.g. "サイゼリヤ 1500円" with
+    // no で/の). Take whatever is left after stripping the amount, genre word,
+    // and trailing particles, so the field is rarely left blank.
+    let fallback = text
+      .replace(/[\d,]+\s*円.*$/, "")
+      .replace(/(食べ|飲んだ|飲み|使った|使いました|食事した|食事しました)$/, "")
+      .trim();
+    if (genre) {
+      fallback = fallback.replace(new RegExp(genre + "$"), "").trim();
+    }
+    fallback = fallback.replace(/[でのはをに、。,]+$/, "").trim();
+
+    return fallback.length >= 1 && fallback.length <= 20 ? fallback : "";
   }
 
   // ---------- speech recognition ----------
@@ -183,9 +195,9 @@
   function applyParsedResult(text) {
     const parsed = parseTranscript(text);
     dateInput.value = parsed.date;
-    if (parsed.store) storeInput.value = parsed.store;
-    if (parsed.genre) genreSelect.value = parsed.genre;
-    if (parsed.amount) amountInput.value = parsed.amount;
+    storeInput.value = parsed.store;
+    genreSelect.value = parsed.genre;
+    amountInput.value = parsed.amount;
     memoInput.value = "";
     voiceStatus.textContent = "認識結果をもとに下のフォームを自動入力しました。内容を確認して保存してください。";
   }
@@ -223,6 +235,7 @@
 
     if (!entry.store) {
       storeInput.focus();
+      storeInput.reportValidity();
       return;
     }
 
