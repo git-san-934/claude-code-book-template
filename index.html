@@ -25,7 +25,7 @@
       <span class="voice-btn-label">音声で記録する</span>
     </button>
     <p id="voiceStatus" class="voice-status" role="status" aria-live="polite">
-      ボタンを押して「今日、渋谷のラーメン屋で1200円使った」のように話してください
+      ボタンを押して「今日、渋谷のラーメン屋でランチ1200円」のように話してください
     </p>
     <p id="voiceUnsupported" class="voice-unsupported" hidden>
       お使いのブラウザは音声入力に対応していません。下のフォームから手入力してください。
@@ -43,6 +43,12 @@
       <div class="field-row">
         <label for="store">店名</label>
         <input type="text" id="store" placeholder="例）ラーメン二郎" required>
+      </div>
+      <div class="field-row">
+        <label for="mealType">食事の種類</label>
+        <select id="mealType">
+          <option value="">選択してください</option>
+        </select>
       </div>
       <div class="field-row">
         <label for="genre">ジャンル</label>

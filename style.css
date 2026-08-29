@@ -263,6 +263,35 @@ section {
   margin-right: 6px;
 }
 
+.history-mealtype {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 0.72rem;
+  margin-right: 6px;
+  font-weight: 700;
+}
+
+.history-mealtype.breakfast {
+  background: #fdf0c9;
+  color: #8a6b00;
+}
+
+.history-mealtype.lunch {
+  background: #dcefe0;
+  color: #2f7a45;
+}
+
+.history-mealtype.dinner {
+  background: #e2e0fb;
+  color: #4b3fb0;
+}
+
+.history-mealtype.snack {
+  background: #fce3ec;
+  color: #b23a6a;
+}
+
 .history-memo {
   font-size: 0.82rem;
   color: var(--muted);
