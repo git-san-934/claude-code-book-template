@@ -48,6 +48,10 @@
   const emptyState = document.getElementById("emptyState");
   const searchInput = document.getElementById("searchInput");
 
+  const exportBtn = document.getElementById("exportBtn");
+  const importBtn = document.getElementById("importBtn");
+  const importFile = document.getElementById("importFile");
+
   const todayISO = () => new Date().toISOString().slice(0, 10);
   dateInput.value = todayISO();
 
@@ -67,6 +71,73 @@
   }
 
   let entries = loadEntries();
+
+  // ---------- backup (export / import) ----------
+
+  exportBtn.addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(entries, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `外食履歴_${todayISO()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  importBtn.addEventListener("click", () => {
+    importFile.value = "";
+    importFile.click();
+  });
+
+  importFile.addEventListener("change", () => {
+    const file = importFile.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      let imported;
+      try {
+        imported = JSON.parse(reader.result);
+        if (!Array.isArray(imported)) throw new Error("not an array");
+      } catch {
+        alert("読み込みに失敗しました。このアプリから書き出したバックアップファイルを選んでください。");
+        return;
+      }
+
+      let added = 0;
+      let updated = 0;
+      imported.forEach((item) => {
+        if (!item || typeof item !== "object" || typeof item.id !== "string" || !item.store) {
+          return;
+        }
+        const normalized = {
+          id: item.id,
+          date: typeof item.date === "string" ? item.date : todayISO(),
+          store: String(item.store),
+          genre: typeof item.genre === "string" ? item.genre : "",
+          mealType: typeof item.mealType === "string" ? item.mealType : "",
+          amount: Number(item.amount) || 0,
+          memo: typeof item.memo === "string" ? item.memo : "",
+          createdAt: Number(item.createdAt) || Date.now(),
+        };
+        const existingIndex = entries.findIndex((e) => e.id === normalized.id);
+        if (existingIndex >= 0) {
+          entries[existingIndex] = normalized;
+          updated++;
+        } else {
+          entries.push(normalized);
+          added++;
+        }
+      });
+
+      saveEntries(entries);
+      render();
+      alert(`インポートが完了しました。追加 ${added}件 / 更新 ${updated}件`);
+    };
+    reader.readAsText(file);
+  });
 
   // ---------- voice parsing (heuristic, Japanese) ----------
 

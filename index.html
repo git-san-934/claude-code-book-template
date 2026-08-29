@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="外食履歴">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 <div class="app">
@@ -86,6 +86,15 @@
     </div>
   </section>
 
+  <section class="backup-panel" aria-label="バックアップ">
+    <p class="backup-desc">記録はこの端末のブラウザにだけ保存されています。消えても大丈夫なように、ときどきファイルに書き出しておくことをおすすめします。</p>
+    <div class="backup-actions">
+      <button type="button" id="exportBtn" class="ghost-btn">📤 バックアップを書き出す</button>
+      <button type="button" id="importBtn" class="ghost-btn">📥 バックアップを読み込む</button>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+    </div>
+  </section>
+
   <section class="history-panel" aria-label="外食履歴一覧">
     <div class="history-toolbar">
       <input type="search" id="searchInput" placeholder="店名・メモで検索">
@@ -95,6 +104,6 @@
   </section>
 </div>
 
-<script src="app.js?v=6"></script>
+<script src="app.js?v=7"></script>
 </body>
 </html>
