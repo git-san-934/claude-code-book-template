@@ -9,12 +9,22 @@
     "ファストフード", "その他",
   ];
 
+  const MEAL_TYPES = ["朝食", "ランチ", "ディナー", "間食"];
+
   const genreSelect = document.getElementById("genre");
   GENRES.forEach((g) => {
     const opt = document.createElement("option");
     opt.value = g;
     opt.textContent = g;
     genreSelect.appendChild(opt);
+  });
+
+  const mealTypeSelect = document.getElementById("mealType");
+  MEAL_TYPES.forEach((m) => {
+    const opt = document.createElement("option");
+    opt.value = m;
+    opt.textContent = m;
+    mealTypeSelect.appendChild(opt);
   });
 
   const voiceBtn = document.getElementById("voiceBtn");
@@ -60,8 +70,15 @@
 
   // ---------- voice parsing (heuristic, Japanese) ----------
 
+  const MEAL_TYPE_PATTERNS = [
+    [/朝ご飯|朝食|モーニング/, "朝食"],
+    [/ランチ|昼ご飯|昼食|お昼/, "ランチ"],
+    [/ディナー|夜ご飯|夕食|晩ご飯|夕飯/, "ディナー"],
+    [/間食|おやつ/, "間食"],
+  ];
+
   function parseTranscript(text) {
-    const result = { date: todayISO(), store: "", genre: "", amount: "", memo: text };
+    const result = { date: todayISO(), store: "", genre: "", mealType: "", amount: "", memo: text };
 
     if (/おととい|一昨日/.test(text)) {
       result.date = shiftDate(-2);
@@ -87,12 +104,25 @@
       result.genre = foundGenre;
     }
 
-    const stripped = text
+    const mealTypeMatch = MEAL_TYPE_PATTERNS.find(([re]) => re.test(text));
+    let mealTypeWord = "";
+    if (mealTypeMatch) {
+      result.mealType = mealTypeMatch[1];
+      mealTypeWord = text.match(mealTypeMatch[0])[0];
+    }
+
+    let stripped = text
       .replace(/おととい|一昨日|昨日|今日|本日/g, "")
       .replace(/\d{1,2}月\d{1,2}日に?/g, "")
       .trim();
 
-    result.store = guessStore(stripped, foundGenre);
+    if (mealTypeWord) {
+      // Drop "<mealTypeWord>で/の" too, so a phrase like "ディナーで焼肉トラジ"
+      // isn't mistaken for a store name ending in "ディナー".
+      stripped = stripped.replace(new RegExp(mealTypeWord + "(で|の)?"), "").trim();
+    }
+
+    result.store = guessStore(stripped, foundGenre, result.mealType);
 
     return result;
   }
@@ -103,7 +133,7 @@
     return d.toISOString().slice(0, 10);
   }
 
-  function guessStore(text, genre) {
+  function guessStore(text, genre, mealType) {
     // Look for "<name>で" (at <name>) or "<name>の<genre>" patterns.
     const deMatch = text.match(/([^\s、。,]{2,20}?)で(食べ|飲|使|食事)/);
     if (deMatch) return deMatch[1];
@@ -115,8 +145,8 @@
     if (plainDe) return plainDe[1];
 
     // Fallback: no particle-based pattern matched (e.g. "サイゼリヤ 1500円" with
-    // no で/の). Take whatever is left after stripping the amount, genre word,
-    // and trailing particles, so the field is rarely left blank.
+    // no で/の). Take whatever is left after stripping the amount, genre/meal
+    // words, and trailing particles, so the field is rarely left blank.
     let fallback = text
       .replace(/[\d,]+\s*円.*$/, "")
       .replace(/(食べ|飲んだ|飲み|使った|使いました|食事した|食事しました)$/, "")
@@ -124,7 +154,10 @@
     if (genre) {
       fallback = fallback.replace(new RegExp(genre + "$"), "").trim();
     }
-    fallback = fallback.replace(/[でのはをに、。,]+$/, "").trim();
+    if (mealType) {
+      fallback = fallback.replace(new RegExp(mealType + "$"), "").trim();
+    }
+    fallback = fallback.replace(/[でのはをに、。,\s]+$/, "").trim();
 
     return fallback.length >= 1 && fallback.length <= 20 ? fallback : "";
   }
@@ -199,7 +232,7 @@
       } else {
         setVoiceButtonState("idle");
         if (!voiceStatus.textContent.includes("エラー")) {
-          voiceStatus.textContent = "ボタンを押して「今日、渋谷のラーメン屋で1200円使った」のように話してください";
+          voiceStatus.textContent = "ボタンを押して「今日、渋谷のラーメン屋でランチ1200円」のように話してください";
         }
       }
     });
@@ -232,6 +265,7 @@
     dateInput.value = parsed.date;
     storeInput.value = parsed.store;
     genreSelect.value = parsed.genre;
+    mealTypeSelect.value = parsed.mealType;
     amountInput.value = parsed.amount;
     memoInput.value = "";
     voiceStatus.textContent = "認識結果をもとに下のフォームを自動入力しました。内容を確認して保存してください。";
@@ -266,6 +300,7 @@
       date: dateInput.value || todayISO(),
       store: storeInput.value.trim(),
       genre: genreSelect.value,
+      mealType: mealTypeSelect.value,
       amount: amountInput.value ? Number(amountInput.value) : 0,
       memo: memoInput.value.trim(),
       createdAt: entryIdInput.value ? entries.find((x) => x.id === id)?.createdAt ?? Date.now() : Date.now(),
@@ -307,6 +342,7 @@
     dateInput.value = entry.date;
     storeInput.value = entry.store;
     genreSelect.value = entry.genre || "";
+    mealTypeSelect.value = entry.mealType || "";
     amountInput.value = entry.amount || "";
     memoInput.value = entry.memo || "";
     cancelEditBtn.hidden = false;
@@ -328,6 +364,17 @@
     return `¥${Number(n || 0).toLocaleString("ja-JP")}`;
   }
 
+  const MEAL_TYPE_CLASSES = {
+    朝食: "breakfast",
+    ランチ: "lunch",
+    ディナー: "dinner",
+    間食: "snack",
+  };
+
+  function mealTypeClass(mealType) {
+    return MEAL_TYPE_CLASSES[mealType] || "";
+  }
+
   function render() {
     const query = searchInput.value.trim().toLowerCase();
     const filtered = entries
@@ -336,7 +383,8 @@
         return (
           e.store.toLowerCase().includes(query) ||
           (e.memo || "").toLowerCase().includes(query) ||
-          (e.genre || "").toLowerCase().includes(query)
+          (e.genre || "").toLowerCase().includes(query) ||
+          (e.mealType || "").toLowerCase().includes(query)
         );
       })
       .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : b.createdAt - a.createdAt));
@@ -351,7 +399,7 @@
         <div class="history-main">
           <span class="history-store">${escapeHtml(entry.store)}</span>
           <span class="history-meta">
-            ${entry.genre ? `<span class="history-genre">${escapeHtml(entry.genre)}</span>` : ""}${entry.date}
+            ${entry.mealType ? `<span class="history-mealtype ${mealTypeClass(entry.mealType)}">${escapeHtml(entry.mealType)}</span>` : ""}${entry.genre ? `<span class="history-genre">${escapeHtml(entry.genre)}</span>` : ""}${entry.date}
           </span>
           ${entry.memo ? `<span class="history-memo">${escapeHtml(entry.memo)}</span>` : ""}
         </div>
