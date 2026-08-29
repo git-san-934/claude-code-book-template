@@ -83,6 +83,14 @@ section {
   animation: pulse 1.2s infinite;
 }
 
+.voice-btn.ready {
+  background: #2f9e58;
+}
+
+.voice-btn.ready:hover {
+  background: #257d45;
+}
+
 .voice-btn-icon {
   font-size: 1.3rem;
 }
