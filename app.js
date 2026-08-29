@@ -134,6 +134,26 @@
   const SpeechRecognitionImpl = window.SpeechRecognition || window.webkitSpeechRecognition;
   let recognition = null;
   let isRecording = false;
+  let voiceReady = false; // true once a final transcript is waiting to be saved
+
+  const voiceBtnIcon = voiceBtn.querySelector(".voice-btn-icon");
+  const voiceBtnLabel = voiceBtn.querySelector(".voice-btn-label");
+
+  function setVoiceButtonState(state) {
+    voiceBtn.classList.remove("recording", "ready");
+    if (state === "recording") {
+      voiceBtn.classList.add("recording");
+      voiceBtnIcon.textContent = "🎤";
+      voiceBtnLabel.textContent = "記録中…";
+    } else if (state === "ready") {
+      voiceBtn.classList.add("ready");
+      voiceBtnIcon.textContent = "💾";
+      voiceBtnLabel.textContent = "保存する";
+    } else {
+      voiceBtnIcon.textContent = "🎤";
+      voiceBtnLabel.textContent = "音声で記録する";
+    }
+  }
 
   if (!SpeechRecognitionImpl) {
     voiceBtn.disabled = true;
@@ -147,8 +167,8 @@
 
     recognition.addEventListener("start", () => {
       isRecording = true;
-      voiceBtn.classList.add("recording");
-      voiceBtn.querySelector(".voice-btn-label").textContent = "聞き取り中…";
+      voiceReady = false;
+      setVoiceButtonState("recording");
       voiceStatus.textContent = "話してください（もう一度押すと停止します）";
     });
 
@@ -162,19 +182,25 @@
       const isFinal = event.results[event.results.length - 1].isFinal;
       if (isFinal) {
         applyParsedResult(text);
+        voiceReady = true;
       }
     });
 
     recognition.addEventListener("error", (event) => {
+      voiceReady = false;
       voiceStatus.textContent = `音声認識でエラーが発生しました（${event.error}）。もう一度お試しください。`;
     });
 
     recognition.addEventListener("end", () => {
       isRecording = false;
-      voiceBtn.classList.remove("recording");
-      voiceBtn.querySelector(".voice-btn-label").textContent = "音声で記録する";
-      if (!voiceStatus.textContent.includes("エラー")) {
-        voiceStatus.textContent = "ボタンを押して「今日、渋谷のラーメン屋で1200円使った」のように話してください";
+      if (voiceReady) {
+        setVoiceButtonState("ready");
+        voiceStatus.textContent = "内容を確認して、もう一度ボタンを押すと保存されます。";
+      } else {
+        setVoiceButtonState("idle");
+        if (!voiceStatus.textContent.includes("エラー")) {
+          voiceStatus.textContent = "ボタンを押して「今日、渋谷のラーメン屋で1200円使った」のように話してください";
+        }
       }
     });
 
@@ -183,6 +209,15 @@
         recognition.stop();
         return;
       }
+
+      if (voiceReady) {
+        if (trySaveEntry()) {
+          resetForm();
+          render();
+        }
+        return;
+      }
+
       transcriptEl.value = "";
       try {
         recognition.start();
@@ -217,11 +252,14 @@
     transcriptEl.value = "";
     cancelEditBtn.hidden = true;
     document.getElementById("saveBtn").textContent = "保存する";
+    voiceReady = false;
+    if (recognition) {
+      setVoiceButtonState("idle");
+      voiceStatus.textContent = "ボタンを押して「今日、渋谷のラーメン屋で1200円使った」のように話してください";
+    }
   }
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-
+  function trySaveEntry() {
     const id = entryIdInput.value || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const entry = {
       id,
@@ -236,7 +274,7 @@
     if (!entry.store) {
       storeInput.focus();
       storeInput.reportValidity();
-      return;
+      return false;
     }
 
     const existingIndex = entries.findIndex((x) => x.id === id);
@@ -247,8 +285,15 @@
     }
 
     saveEntries(entries);
-    resetForm();
-    render();
+    return true;
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (trySaveEntry()) {
+      resetForm();
+      render();
+    }
   });
 
   cancelEditBtn.addEventListener("click", () => {
