@@ -4,7 +4,7 @@
   const STORAGE_KEY = "diningHistory.entries.v1";
 
   const GENRES = [
-    "ラーメン", "寿司", "焼肉", "居酒屋", "中華", "イタリアン",
+    "ラーメン", "寿司", "焼肉", "居酒屋", "中華", "イタリアン", "フランス料理",
     "フレンチ", "カフェ", "定食", "カレー", "焼き鳥", "そば・うどん",
     "ファストフード", "その他",
   ];
@@ -77,8 +77,16 @@
     [/間食|おやつ/, "間食"],
   ];
 
-  function parseTranscript(text) {
-    const result = { date: todayISO(), store: "", genre: "", mealType: "", amount: "", memo: text };
+  function toHalfWidth(str) {
+    return str
+      .replace(/[０-９]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0xff10 + 0x30))
+      .replace(/，/g, ",")
+      .replace(/　/g, " ");
+  }
+
+  function parseTranscript(rawText) {
+    const text = toHalfWidth(rawText);
+    const result = { date: todayISO(), store: "", genre: "", mealType: "", amount: "", memo: "" };
 
     if (/おととい|一昨日/.test(text)) {
       result.date = shiftDate(-2);
@@ -111,18 +119,33 @@
       mealTypeWord = text.match(mealTypeMatch[0])[0];
     }
 
-    let stripped = text
-      .replace(/おととい|一昨日|昨日|今日|本日/g, "")
-      .replace(/\d{1,2}月\d{1,2}日に?/g, "")
-      .trim();
-
-    if (mealTypeWord) {
-      // Drop "<mealTypeWord>で/の" too, so a phrase like "ディナーで焼肉トラジ"
-      // isn't mistaken for a store name ending in "ディナー".
-      stripped = stripped.replace(new RegExp(mealTypeWord + "(で|の)?"), "").trim();
+    // Explicit "メモ<...>" / "メモは<...>" marker: whatever follows is taken
+    // verbatim as the memo, so a spoken aside like "メモ肉がおいしかった" doesn't
+    // need any particular grammar to be recognized.
+    const memoMatch = text.match(/メモは?([\s\S]+?)。?$/);
+    if (memoMatch && memoMatch[1].trim()) {
+      result.memo = memoMatch[1].trim();
     }
 
-    result.store = guessStore(stripped, foundGenre, result.mealType);
+    // Explicit "店名は<...>" / "店名<...>" marker takes priority over the
+    // heuristic guess below, since it's unambiguous.
+    const storeMatch = text.match(/店名は?([^\s、。]+?)(?=メモ|、|。|\d|$)/);
+    if (storeMatch && storeMatch[1].trim()) {
+      result.store = storeMatch[1].trim().replace(/[でのはをに、。,]+$/, "");
+    } else {
+      let stripped = text
+        .replace(/おととい|一昨日|昨日|今日|本日/g, "")
+        .replace(/\d{1,2}月\d{1,2}日に?/g, "")
+        .trim();
+
+      if (mealTypeWord) {
+        // Drop "<mealTypeWord>で/の" too, so a phrase like "ディナーで焼肉トラジ"
+        // isn't mistaken for a store name ending in "ディナー".
+        stripped = stripped.replace(new RegExp(mealTypeWord + "(で|の)?"), "").trim();
+      }
+
+      result.store = guessStore(stripped, foundGenre, result.mealType);
+    }
 
     return result;
   }
@@ -267,7 +290,7 @@
     genreSelect.value = parsed.genre;
     mealTypeSelect.value = parsed.mealType;
     amountInput.value = parsed.amount;
-    memoInput.value = "";
+    memoInput.value = parsed.memo;
     voiceStatus.textContent = "認識結果をもとに下のフォームを自動入力しました。内容を確認して保存してください。";
   }
 
