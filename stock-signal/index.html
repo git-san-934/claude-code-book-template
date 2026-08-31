@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>株シグナル | 買い時・売り時判定</title>
+<meta name="theme-color" content="#1f6f5c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="株シグナル">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="app-header">
+    <h1>📈 株シグナル</h1>
+    <p class="subtitle">終値を入力するだけで、買い時・売り時の目安がわかります</p>
+  </header>
+
+  <section class="stock-panel" aria-label="銘柄の選択">
+    <div class="field-row">
+      <label for="stockSelect">銘柄</label>
+      <select id="stockSelect"></select>
+    </div>
+    <div class="stock-actions">
+      <button type="button" id="newStockBtn" class="ghost-btn">＋ 銘柄を追加</button>
+      <button type="button" id="deleteStockBtn" class="ghost-btn danger-text">🗑️ この銘柄を削除</button>
+    </div>
+    <form id="newStockForm" class="new-stock-form" hidden>
+      <div class="field-row">
+        <label for="newStockName">銘柄名・コード</label>
+        <input type="text" id="newStockName" placeholder="例）トヨタ自動車 / 7203" required>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="primary-btn">追加する</button>
+        <button type="button" id="cancelNewStockBtn" class="ghost-btn">キャンセル</button>
+      </div>
+    </form>
+    <p id="noStockState" class="empty-state" hidden>銘柄がありません。まずは「＋ 銘柄を追加」から登録してください。</p>
+  </section>
+
+  <section class="price-panel" aria-label="終値の入力">
+    <form id="priceForm">
+      <input type="hidden" id="priceId">
+      <div class="field-row">
+        <label for="priceDate">日付</label>
+        <input type="date" id="priceDate" required>
+      </div>
+      <div class="field-row">
+        <label for="priceClose">終値（円）</label>
+        <input type="number" id="priceClose" min="0" step="0.1" placeholder="例）2450" required>
+      </div>
+      <div class="form-actions">
+        <button type="submit" id="savePriceBtn" class="primary-btn">記録する</button>
+        <button type="button" id="cancelPriceEditBtn" class="ghost-btn" hidden>編集をキャンセル</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="judgment-panel" aria-label="判定結果">
+    <div id="judgmentBadge" class="judgment-badge neutral">データ不足</div>
+    <p id="judgmentMessage" class="judgment-message">終値を25件以上記録すると判定できます。</p>
+    <div class="judgment-detail">
+      <div class="detail-item">
+        <span class="detail-label">5日移動平均</span>
+        <span id="smaShortValue" class="detail-value">–</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">25日移動平均</span>
+        <span id="smaLongValue" class="detail-value">–</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">RSI（14日）</span>
+        <span id="rsiValue" class="detail-value">–</span>
+      </div>
+    </div>
+    <p id="rsiNote" class="rsi-note" hidden></p>
+  </section>
+
+  <section class="chart-panel" aria-label="株価チャート">
+    <canvas id="priceChart" width="600" height="240"></canvas>
+    <p id="chartEmptyState" class="empty-state" hidden>まだデータがありません。終値を入力してください。</p>
+  </section>
+
+  <section class="backup-panel" aria-label="バックアップ">
+    <p class="backup-desc">記録はこの端末のブラウザにだけ保存されています。消えても大丈夫なように、ときどきファイルに書き出しておくことをおすすめします。</p>
+    <div class="backup-actions">
+      <button type="button" id="exportBtn" class="ghost-btn">📤 バックアップを書き出す</button>
+      <button type="button" id="importBtn" class="ghost-btn">📥 バックアップを読み込む</button>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+    </div>
+  </section>
+
+  <section class="history-panel" aria-label="終値の履歴">
+    <ul id="priceHistoryList" class="history-list"></ul>
+    <p id="priceEmptyState" class="empty-state" hidden>まだ終値が記録されていません。</p>
+  </section>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

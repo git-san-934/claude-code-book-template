@@ -1,0 +1,319 @@
+:root {
+  --bg: #f4f8f6;
+  --surface: #ffffff;
+  --text: #202824;
+  --muted: #6f7d76;
+  --accent: #1f6f5c;
+  --accent-dark: #16523f;
+  --border: #dde7e1;
+  --danger: #c0392b;
+  --up: #1f8a4c;
+  --down: #c0392b;
+  --radius: 14px;
+  font-family: "Hiragino Sans", "Noto Sans JP", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.app-header h1 {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.field-row label {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.field-row input,
+.field-row select {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.primary-btn {
+  flex: 1;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  background: var(--accent-dark);
+}
+
+.ghost-btn {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.ghost-btn:hover {
+  color: var(--text);
+}
+
+.ghost-btn.danger-text {
+  color: var(--danger);
+}
+
+.stock-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.stock-actions .ghost-btn {
+  flex: 1;
+  min-width: 150px;
+  padding: 10px 12px;
+  font-size: 0.88rem;
+}
+
+.new-stock-form {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
+}
+
+.judgment-panel {
+  text-align: center;
+}
+
+.judgment-badge {
+  display: inline-block;
+  padding: 8px 22px;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--muted);
+}
+
+.judgment-badge.buy {
+  background: var(--up);
+}
+
+.judgment-badge.sell {
+  background: var(--down);
+}
+
+.judgment-badge.hold-buy {
+  background: #6fae5a;
+}
+
+.judgment-badge.hold-sell {
+  background: #cf7b4f;
+}
+
+.judgment-badge.neutral,
+.judgment-badge.unknown {
+  background: var(--muted);
+}
+
+.judgment-message {
+  margin: 12px 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.judgment-detail {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.detail-item {
+  flex: 1;
+  text-align: center;
+  padding: 10px 4px;
+  background: var(--bg);
+  border-radius: 10px;
+}
+
+.detail-label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.detail-value {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.rsi-note {
+  margin: 14px 0 0;
+  font-size: 0.85rem;
+  color: var(--accent-dark);
+  background: #eaf4f0;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.chart-panel canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.backup-desc {
+  margin: 0 0 10px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.backup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.backup-actions .ghost-btn {
+  flex: 1;
+  min-width: 150px;
+  padding: 10px 12px;
+  font-size: 0.88rem;
+}
+
+.history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.history-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.history-date {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.history-change {
+  font-size: 0.78rem;
+}
+
+.history-change.up {
+  color: var(--up);
+}
+
+.history-change.down {
+  color: var(--down);
+}
+
+.history-side {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.history-close {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.history-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--muted);
+  padding: 2px 4px;
+}
+
+.icon-btn:hover {
+  color: var(--text);
+}
+
+.icon-btn.delete:hover {
+  color: var(--danger);
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 12px 0;
+}

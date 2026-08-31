@@ -1,0 +1,11 @@
+{
+  "name": "株シグナル",
+  "short_name": "株シグナル",
+  "description": "終値を入力するだけで株の買い時・売り時の目安がわかるアプリ",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f8f6",
+  "theme_color": "#1f6f5c",
+  "lang": "ja"
+}
