@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>株価シグナル判定 | 買い時・売り時チェッカー</title>
+<meta name="theme-color" content="#1f6f5c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="株価シグナル">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div class="app">
+  <header class="app-header">
+    <h1>📈 株価シグナル判定</h1>
+    <p class="subtitle">銘柄コードを入力すると、株価チャートから買い時・売り時の目安を判定します</p>
+  </header>
+
+  <section class="search-panel" aria-label="銘柄コード入力">
+    <form id="codeForm">
+      <div class="field-row">
+        <label for="codeInput">銘柄コード</label>
+        <input
+          type="text"
+          id="codeInput"
+          placeholder="例）7203（トヨタ）、6758（ソニー）、AAPL、AAPL.US"
+          autocomplete="off"
+          spellcheck="false"
+          required
+        >
+      </div>
+      <button type="submit" id="checkBtn" class="primary-btn">判定する</button>
+    </form>
+    <p class="search-hint">日本株は4桁の証券コード（例：7203）、米国株はティッカー（例：AAPL）で入力してください。</p>
+  </section>
+
+  <p id="statusMsg" class="status-msg" role="status" aria-live="polite" hidden></p>
+  <p id="fallbackNotice" class="fallback-notice" role="status" aria-live="polite" hidden>
+    実データの取得に失敗したため、このコード専用のサンプルデータで表示しています。判定ロジックの確認用としてご利用ください。
+  </p>
+
+  <section id="resultPanel" class="result-panel" aria-label="判定結果" hidden>
+    <div class="result-header">
+      <div class="result-title">
+        <span id="resultCode" class="result-code"></span>
+        <span id="resultName" class="result-name"></span>
+      </div>
+      <div id="signalBadge" class="signal-badge"></div>
+    </div>
+
+    <div class="price-row">
+      <span id="resultPrice" class="result-price"></span>
+      <span id="resultChange" class="result-change"></span>
+    </div>
+
+    <div class="chart-wrap">
+      <canvas id="chartCanvas" width="640" height="280"></canvas>
+      <div class="chart-legend">
+        <span class="legend-item"><i class="dot close"></i>終値</span>
+        <span class="legend-item"><i class="dot sma-short"></i>SMA5</span>
+        <span class="legend-item"><i class="dot sma-long"></i>SMA25</span>
+        <span class="legend-item"><i class="mark buy"></i>買いシグナル</span>
+        <span class="legend-item"><i class="mark sell"></i>売りシグナル</span>
+      </div>
+    </div>
+
+    <ul id="reasonList" class="reason-list"></ul>
+
+    <p class="disclaimer">
+      ※ この判定は移動平均線とRSIに基づく簡易的な目安であり、投資助言ではありません。投資判断はご自身の責任で行ってください。
+    </p>
+  </section>
+</div>
+
+<script src="app.js?v=1"></script>
+</body>
+</html>

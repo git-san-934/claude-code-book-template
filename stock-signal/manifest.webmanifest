@@ -1,0 +1,11 @@
+{
+  "name": "株価シグナル判定",
+  "short_name": "株価シグナル",
+  "description": "銘柄コードを入力すると株価チャートから買い時・売り時の目安を判定するアプリ",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f8f7",
+  "theme_color": "#1f6f5c",
+  "lang": "ja"
+}

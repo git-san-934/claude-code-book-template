@@ -1,0 +1,281 @@
+:root {
+  --bg: #f4f8f7;
+  --surface: #ffffff;
+  --text: #1e2a27;
+  --muted: #66766f;
+  --accent: #1f6f5c;
+  --accent-dark: #175646;
+  --border: #dbe6e2;
+  --buy: #1f8a4c;
+  --buy-bg: #e2f5e9;
+  --sell: #c0392b;
+  --sell-bg: #fbe6e3;
+  --hold: #8a6d1f;
+  --hold-bg: #fbf2d9;
+  --radius: 14px;
+  font-family: "Hiragino Sans", "Noto Sans JP", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.app-header h1 {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.field-row label {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.field-row input {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.primary-btn {
+  width: 100%;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  background: var(--accent-dark);
+}
+
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.search-hint {
+  margin: 10px 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.status-msg {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin: 0 0 16px;
+}
+
+.fallback-notice {
+  background: #fff6e0;
+  border: 1px solid #f0dca6;
+  color: #7a5c00;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  margin: 0 0 16px;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.result-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.result-code {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.result-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.signal-badge {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.signal-badge.buy {
+  background: var(--buy-bg);
+  color: var(--buy);
+}
+
+.signal-badge.sell {
+  background: var(--sell-bg);
+  color: var(--sell);
+}
+
+.signal-badge.hold {
+  background: var(--hold-bg);
+  color: var(--hold);
+}
+
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.result-price {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.result-change {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.result-change.up {
+  color: var(--buy);
+}
+
+.result-change.down {
+  color: var(--sell);
+}
+
+.chart-wrap {
+  margin-bottom: 16px;
+}
+
+#chartCanvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot.close {
+  background: #2b3a37;
+}
+
+.dot.sma-short {
+  background: #e08a2c;
+}
+
+.dot.sma-long {
+  background: #2c6fe0;
+}
+
+.mark {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
+
+.mark.buy {
+  border-bottom: 8px solid var(--buy);
+}
+
+.mark.sell {
+  border-top: 8px solid var(--sell);
+}
+
+.reason-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reason-list li {
+  font-size: 0.88rem;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.disclaimer {
+  margin: 0;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
